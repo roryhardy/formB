@@ -8,55 +8,68 @@
  Copyright   : You may use this code in your own projects as long as this copyright is left in place.
  All code is provided AS-IS. This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- © Rory Cronin-Hardy 2011
+ Â© Rory Cronin-Hardy 2011
  Special Thanks	: Special thanks to [Steven Smith] for his help with testing and for programming tips and ideas!
  =================================================================================================================================================================
  */
 
 require_once('config.inc');
 
-
+/**
+ * FormBackend processes form input.  This file contains both the FormB and Line classes. 
+ * Mysql handle is optional.
+ *
+ * @category PHP
+ * @package Form Backend
+ * @copyright GneatGeek [Rory Cronin-Hardy]
+ * @license http://www.gnu.org/licenses/gpl-2.0.html GPL V2.0
+ * @version 1.6
+ * @link https://github.com/gneatgeek/formB
+ */
 class FormB{
 	private $_errors, $_required, $_handle;
 
-	/* Constructor Method
-	 * Takes: Required field or array of required fields $requiredVars.
-	 *        Mysql handle $mysqlHandle.  Used with checkIP and logIP methods.
+	/**
+	 * Constructor Method
+	 * @param string|array[optional] $requiredVars - Required field or array of required fields
+	 * @param resource[optional] $mysqlHandle - Mysql handle used with checkIP and logIP methods.
 	 */
-	public function __construct($requiredVars="", $mysqlHandle=""){
+	public function __construct($requiredVars=NULL, $mysqlHandle=NULL){
 		$this->_required = $requiredVars;
 		$this->_handle   = $mysqlHandle; # Used for database stuff in the advanced section.
 	}
 
-	/* Is Set Not Empty Method
-	 * Use:     Verify if a variable is set and is not empty.
-	 * Takes:   Variable reference $var
-	 * Returns: True if the variable is set AND not empty.
-	 *            False otherwise.
+	/**
+	 * Is Set Not Empty Method
+	 * Use: Verify if a variable is set and is not empty.
+	 * @param mixed $var - Reference of a variable to be checked.
+	 * @return bool - True if the variable is set AND not empty.  False otherwise.
 	 */
 	final public static function isSetNotEmpty(&$var){
 		return(isset($var) && !empty($var));
 	}
 
-	/* Add Custom Error Method
-	 * Takes:        Error Message $errorMessage
-	 * Description:  Adds error message to $_errors array
-	 *               Use this method for specialized/unique error handling
-	 *               Note it will not allow you to add empty errors since they are meaningless.
+	/**
+	 * Add Custom Error Method
+	 * Use this method for specialized/unique error handling
+	 * Note it will not allow you to add empty errors since they are meaningless.
+	 * @param string $errorMessage  - Message to add to the errors array.
 	 */
 	final public function addError($errorMessage){
 		if(!empty($errorMessage))
 			$this->_errors[] = $errorMessage;
 	}
 
-	/* Check Errors Method
-	 * Returns: False if there are no errors and true if errors exist.
+	/**
+	 * Check Errors Method
+	 * @return bool - False if there are no errors and true if errors exist.
 	 */
 	final public function checkErrors(){
 		return(!empty($this->_errors));
 	}
 
-	/* Process Required Fields Method
+	/**
+	 * Process Required Fields Method
 	 * NOTE: This method should only be called once!
 	 * Use:  Verifies that all values in the $_required array are set and not empty
 	 *       Will capitalize the first letter of each word for the form field.  Will also convert '_' to ' '
@@ -64,6 +77,7 @@ class FormB{
 	 * Uses: $_REQUEST since that is a combination of $_GET, $_POST, and $_COOKIE...
 	 *       Don't mix and match GET/POST with the same field names or one will get overwritten by the
 	 *         other as defined in php.ini.  Normally GPC -> Get, Post, Cookie.
+	 * @throws Exception - Don't call this method without specifying at least one required variable.
 	 */
 	public function processReq(){
 		if(empty($this->_required))
@@ -80,7 +94,8 @@ class FormB{
 			$this->_errors[] = sprintf("You left the <strong>%s</strong> field blank!", ucwords(str_replace("_", " ", $e)));
 	}
 
-	/* Print Errors Method
+	/**
+	 * Print Errors Method
 	 * It will print nicely formatted html by default.
 	 * Prints a division with class="errors".  Outputs p tags for errors.  Style with CSS.
 	 * Can be easily modified to format inline.
@@ -96,17 +111,19 @@ class FormB{
 		}
 	}
 
-	/* Print Text Method
+	/**
+	 * Print Text Method
 	 * Use:   Set default text for a form to display.  Useful if user makes an error.
 	 * 	      Don't make your user re-enter data on form submission failures.
 	 *        Primary use -- <textarea>
-	 * Takes: REQUEST variable name $requestVar
-	 *        BOOLEAN $return to determine wether to return the string or to print it out.
 	 * Uses:  $_REQUEST since that is a combination of $_GET, $_POST, and $_COOKIE...
 	 *        sanitizeInput() FOR PROTECTION AGAINST XSS ATTACKS!
 	 *          NOT REDUNDANT!  sanitizePOST/GET does NOT affect the REQUEST array!
 	 * Do not mix and match GET/POST with the same field names or one will get overwritten by the
 	 * other as defined in php.ini.  Normally GPC -> Get, Post, Cookie.
+	 * @param mixed $requestVar - Associative REQUEST variable name.
+	 * @param bool[optional] $return - Determine wether or not to return or print out the string.
+	 * @return string - Returns a string if $return is set to TRUE
 	 */
 	public static function printTxt($requestVar, $return=FALSE){
 		if(self::isSetNotEmpty($_REQUEST[$requestVar])){
@@ -118,12 +135,14 @@ class FormB{
 		}
 	}
 
-	/* Print Value Method
-	 * Use:      Set default value for a form to display.  Useful if user makes an error.
-	 *             Don't make your user re-enter data on form submission failures.
-	 * Takes:    REQUEST variable name $requestVar
-	 *           BOOLEAN $return to determine wether to return the string or to print it out.
+	/**
+	 * Print Value Method
+	 * Use:  Set default value for a form to display.  Useful if user makes an error.
+	 *       Don't make your user re-enter data on form submission failures.
 	 * REQUIRES: printTxt();
+	 * @param string $requestVar - Associative REQUEST variable name.
+	 * @param bool[optional] $return - Determine wether or not to return or print out the string.
+	 * @return string - Returns a string if $return is set to TRUE
 	 */
 	public static function printVal($requestVar, $return=FALSE){
 		if(self::isSetNotEmpty($_REQUEST[$requestVar])){
@@ -135,19 +154,17 @@ class FormB{
 		}
 	}
 
-	/*
+	/**
 	 * Print Option Tags Method
-	 * Use:   This method will create a complete drop down menu with the ability for it to auto-select
-	 *            the last known selection in case the form has an error during submission.
-	 *            Does NOT print out the <select></select> tags, but will create all the <option></option> tags.
-	 *        Don't make your user reset info they already set.  Also can print out a default
-	 *            non-selectable option for display and user guidance purposes.
-	 * Takes: Name of the parent <select> tag $selectName
-	 *        Array of options (can be numerical or associative) &$options
-	 *        Non-Selectable default option text $defaultText.  Defaults to &nbsp;.
-	 *            If you pass NULL or a blank string a default option will not be printed.
-	 *        Wether or not to use the array key as the option value BOOLEAN $useKey
-	 *            array("Value" => "Display to user") etc
+	 * Use:  This method will create a complete drop down menu with the ability for it to auto-select
+	 *         the last known selection in case the form has an error during submission.
+	 *       Does NOT print out the <select></select> tags, but will create all the <option></option> tags.
+	 *       Don't make your user reset info they already set.  Also can print out a default
+	 *         non-selectable option for display and user guidance purposes.
+	 * @param string $selectName - Name of the parent <select> tag
+	 * @param mixed $options - reference to an array of options (can be numerical or associative)
+	 * @param string[optional] $defaultText - Non-Selectable default option text.  Defaults to &nbsp;
+	 * @param bool[optional] $useKey - Wether or not to use the array key as the option value. array("Value" => "Display to user") etc
 	 */
 	public static function printOptions($selectName, &$options, $defaultText="&nbsp;", $useKey=FALSE){
 		$selected = (isset($_REQUEST[$selectName]) ? $_REQUEST[$selectName] : FALSE);
@@ -174,22 +191,17 @@ class FormB{
 		}
 	}
 
-	/* Send Mail Method
+	/**
+	 * Send Mail Method
 	 * Sends an HTML email with a pre-defined format.
-	 * Takes:  Email Recipient $emailRecipient or array of email recipients{
-	 *           The formatting of this string must comply with RFC 2822.  See examples below.
-	 *           user@example.com
-	 *           user@example.com,anotheruser@example.com
-	 *           User <user@example.com>
-	 *           User <user@example.com>, Another User <anotheruser@example.com>
-	 *           Pass in an array to send emails to individual email addresses for privacy.
-	 *         }
-	 *         Subject $subject
-	 *         Email Template (external file) $template;  Can be HTML and/or PHP
-	 *           See message.inc for an example.
-	 *         Sender $sender
 	 * THROWS: Exceptions if $emailRecipient, $subject, $template, or $sender is not set properly!
 	 *         Exceptions if the message(s) are not sent properly.
+	 * @param string|array @emailRecipient - Email Recipient or array of email recipients.
+	 * The formatting of this string must comply with RFC 2822.
+	 * @param string $subject - Subject of email
+	 * @param string $template - Email Template (external file).  Can be HTML and/or PHP.
+	 * @param string $sender - Who the sender is (email address).
+	 * @throws Exception - Handles various errors
 	 */
 	public function sendMail($emailRecipient, $subject, $template, $sender){
 		if(empty($emailRecipient))
@@ -217,23 +229,19 @@ class FormB{
 		}
 	}
 
-	/* Lazy Mail Method
+	/**
+	 * Lazy Mail Method
 	 * Sends a basic array dump of all set POST elements.
-	 * Takes:    Email Recipient $emailRecipient or array of email recipients{
-	 *             The formatting of this string must comply with RFC 2822.  See examples below.
-	 *             user@example.com
-	 *             user@example.com,anotheruser@example.com
-	 *             User <user@example.com>
-	 *             User <user@example.com>, Another User <anotheruser@example.com>
-	 *             Pass in an array to send emails to individual email addresses for privacy.
-	 *           }
-	 *           Subject $subject
-	 *           Sender $sender
 	 * Requires: Form to be sent via the POST method.
 	 *             Do not use $_REQUEST as it causes a security issue with array dumps.
-	 * THROWS:   Exceptions if $emailRecipient, $subject, or $sender is not set properly!
-	 *           Exceptions if the message(s) are not sent properly.
-	 * POST variables should be well named if this method is to be used.
+	 * THROWS:  Exceptions if $emailRecipient, $subject, or $sender is not set properly!
+	 *          Exceptions if the message(s) are not sent properly.
+	 * POST variables should be well named if this method is to be used!
+	 * @param string|array @emailRecipient - Email Recipient or array of email recipients.
+	 * The formatting of this string must comply with RFC 2822.
+	 * @param string $subject - Subject of email
+	 * @param string $sender - Who the sender is (email address).
+	 * @throws Exception - Handles various errors
 	 */
 	public function lazyMail($emailRecipient, $subject, $sender){
 		if(empty($emailRecipient))
@@ -260,13 +268,14 @@ class FormB{
 		}
 	}
 
-	/* Validate Email Method
-	 * Takes: Email address reference $email
-	 *        True/False to check the MX record to validate the domain of the email $chkDNS
-	 *          Defaults to true as this is a good thing in most cases.
+	/**
+	 * Validate Email Method
 	 * Validates both the format of the email and checks the MX records to verify
 	 * that the domain of the email address exists.
 	 * Sets an error if the email address supplied is invalid.
+	 * @param string $email - Reference to the email address in question.
+	 * @param bool[optional] $chkDNS - Determine wether to validate the domain of the email address.
+	 * Defaults to true for more thorough email validation.
 	 */
 	final public function validEmail(&$email, $chkDNS=TRUE){
 		$isValid = TRUE;
@@ -305,21 +314,25 @@ class FormB{
 			$this->_errors[] = "The <strong>Email Address</strong> you supplied was invalid!";
 	}
 
-	/* Sanitize Input Method
-	 * Takes: String $string
+	/**
+	 * Sanitize Input Method
 	 * Sanitizes user input by converting all applicable characters to HTML entities.
 	 * This is a simple yet effective way of removing XSS attack potential from web forms.
 	 * This method is NOT sufficient for CMS use where HTML will be reposted/executed!  Regex is necessary in that case!
+	 * @param string $string - String to be santizied.
+	 * @return string - The sanitized string.
 	 */
 	static private function sanitizeInput($string){
 		return htmlentities($string);
 	}
 
-	/* Sanitize Array Method
-	 * Takes:    Array $arr
+	/**
+	 * Sanitize Array Method
 	 * Requires: sanitizeInput()
 	 * Sanitizes user input via sanitizeInput();
 	 * This method handles arrays to be sanitized and recursively calls itself if there are sub-arrays found.
+	 * @param array $arr - Array of data to be sanitized.
+	 * @return array - The sanitized array
 	 */
 	final static public function sanitizeArray($arr){
 		foreach($arr as $key=>$value){
@@ -331,12 +344,14 @@ class FormB{
 		return($arr);
 	}
 
-	/* Sanitize Object Method
-	 * Takes:    Object $object
+	/**
+	 * Sanitize Object Method
 	 * Requires: sanitizeInput(), sanitizeArray()
 	 * Sanitizes user input via sanitizeInput().
 	 * Determines whether the object passed is an array or not and handles the data accordingly.
 	 * General Sanitation Method!
+	 * @param mixed $ob - Abstract object (array or otherwise)
+	 * @return mixed - The Sanitized object.
 	 */
 	final static public function sanitizeObject($ob){
 		if(is_array($ob))
@@ -345,7 +360,8 @@ class FormB{
 			return self::sanitizeInput($ob);
 	}
 
-	/* Sanitize POST Method
+	/**
+	 * Sanitize POST Method
 	 * Requires: sanitizeArray()
 	 * Sanitizes the entire POST array.
 	 */
@@ -353,7 +369,8 @@ class FormB{
 		$_POST = self::sanitizeArray($_POST);
 	}
 
-	/* Sanitize GET Method
+	/**
+	 * Sanitize GET Method
 	 * Requires: sanitizeArray()
 	 * Sanitizes the entire GET array.
 	 */
@@ -361,14 +378,15 @@ class FormB{
 		$_GET = self::sanitizeArray($_GET);
 	}
 
-	/* Check It Box Function
-	 * Use:     Checks if a check box is checked or not when using an array of checkboxes.
-	 * Takes:   Var $string, the string you want to verify with.
-	 *          Array Pointer $checkBoxArray, the checkbox array.
-	 * Returns:	Either an empty string or the checked=checked string
+	/**
+	 * Check It Box Function
+	 * Use:  Checks if a check box is checked or not when using an array of checkboxes.
+	 * @param string $string - The string you wish to verify with.
+	 * @param array Reference to an array of checkboxes.
+	 * @return string - Either an empty string or the checked=checked string
 	 */
 	public static function checkItBox($string, &$checkBoxArray){
-		$c='';
+		$c=NULL;
 		if(!empty($checkBoxArray)){
 			if(in_array($string, $checkBoxArray))
 				$c = 'checked="checked"';
@@ -380,20 +398,22 @@ class FormB{
 	 * This section assumes you have access to a MySQL database and know how to connect to it.
 	 */
 
-	/* Check user IP method
-	 * Takes: The defined database table $tbl
-	 *        Constant in the URL to be ommited $urlOmitString
-	 *        # of allowed tries $allowableNumAttempts which defaults to 3.
-	 * Uses:  The connection handler $this->_handle.
+	/**
+	 * Check user IP method
+	 * Uses: The connection handler $this->_handle.
 	 * Use this method instead of handleIP if you already have a mysql connection.
 	 * Checks if the user has exceeded the allowed number of attempts in the
 	 * last 30 minutes to correctly fill out your form.
 	 * SEE Proposed SQL Structure in default.sql!
 	 * WARNING! By using this method, you may be seriously restricting access to your forms by using this method if
-	 * 	several people are using proxies or are behing a NAT router.
+	 * 	several people are using proxies or are behind a NAT router.
 	 * If the user exceedes, add an error to the error array.
+	 * @param string $tbl - The defined database table
+	 * @param string[optional] $urlOmitString - Constant in the URL to be ommited.
+	 * @param int[optional] $allowableNumAttempts - # of allowed tries to submit.  Defaults to 3.
+	 * @throws Exception - bad mysql handle
 	 */
-	public function checkIP($tbl, $urlOmitString="", $allowableNumAttempts=3){
+	public function checkIP($tbl, $urlOmitString=NULL, $allowableNumAttempts=3){
 		if(!is_resource($this->_handle))
 			throw new Exception("Handle provided was not a valid MySQL resource in method checkIP().");
 		$q = sprintf("SELECT `attempts` FROM %s\n WHERE `page`='%s'\nAND `remote_addr`='%s'\nAND `date`>NOW()- INTERVAL 30 MINUTE LIMIT 1",
@@ -409,12 +429,15 @@ class FormB{
 		}else $this->_errors[] = FORM_CHKERR;
 	}
 
-	/* Log user's IP Method
+	/**
+	 * Log user's IP Method
 	 * Takes: The defined database table $tbl
 	 *        Constant in the URL to be ommited $urlOmitString
 	 * Uses:  The connection handler $this->_handle
 	 * If the user submits or attemps to submit, log their IP address along with a timestamp and what form page they are on.
 	 * Add something like name or email for added security.  A captcha (recaptcha) is another good (probably better) tool.
+	 * @param string $tbl - The defined database table
+	 * @param string[optional] $urlOmitString - Constant in the URL to be ommited.
 	 */
 	private function logIP($tbl, $urlOmitString){
 		$q = sprintf("INSERT INTO %s\n(`page`,`remote_addr`)\nVALUES(\n'%s',\n%s)\nON DUPLICATE KEY UPDATE `attempts`="
@@ -427,7 +450,8 @@ class FormB{
 			$this->_errors[] = FORM_LOGERR;
 	}
 
-	/* Internal IP Handling method.
+	/**
+	 * Internal IP Handling method.
 	 * Checks AND logs user IPs.
 	 * Connects to DB and disconects upon completion.
 	 * Uses Constants defined in the config section
@@ -455,9 +479,10 @@ class FormB{
 		return substr($string, strlen($needle));
 	}
 
-	/* Connect to Database Method
+	/**
+	 * Connect to Database Method
 	 * Uses Constants defined in the config section
-	 * Throws:	Standard SQL connection errors
+	 * @throws Exception - Standard SQL connection errors
 	 */
 	private function connect2DB(){
 		if(!$this->_handle = mysql_connect(HANDLEIP_DBHOST, HANDLEIP_DBUSER, HANDLEIP_DBPASS))
@@ -466,9 +491,10 @@ class FormB{
 			throw new Exception('Error selecting database: ' . HANDLEIP_DBNAME . ' in method connect2DB().');
 	}
 
-	/* Close Database Method
+	/**
+	 * Close Database Method
 	 * Uses $this->_handle
-	 * Throws: Error if mysql_close fails.
+	 * @throws Exception - Error if mysql_close fails.
 	 */
 	private function closeDB(){
 		if(!mysql_close($this->_handle))
@@ -477,9 +503,10 @@ class FormB{
 
 	// ///\/\\\\///\\///\/\\\//\ END ADVANCED SECTION!!! \\/\\\///\\/\/\/\\\\////\\//\\\//\/\/\/\/\\\//\
 
-	/* Get Var Method
-	 * Takes:   Class variable name $var
-	 * Returns: Class variable of $var
+	/**
+	 * Get Var Method
+	 * @param string $var - Class variable name to retrieve
+	 * @return mixed - Contents of the requested internal variable
 	 */
 	final public function getVar($var){
 		return $this->$var;
@@ -487,7 +514,8 @@ class FormB{
 }
 
 
-/* Line Class
+/**
+ * Line Class
  * Please note: This class will be removed from future versions!
  * Takes: The prefix to the data (IE. Phone: [for a phone number]) $prefix
  *        The submission data that goes with the given prefix (IE. 555-555-1212 [for a phone number] $data
