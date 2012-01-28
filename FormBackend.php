@@ -203,7 +203,7 @@ class FormB{
 	 * @param string $sender - Who the sender is (email address).
 	 * @throws Exception - Handles various errors
 	 */
-	public function sendMail($emailRecipient, $subject, $template, $sender){
+	public static function sendMail($emailRecipient, $subject, $template, $sender){
 		if(empty($emailRecipient))
 			throw new Exception('Email recipient(s) are required in method sendMail().');
 		if(empty($subject))
@@ -243,7 +243,7 @@ class FormB{
 	 * @param string $sender - Who the sender is (email address).
 	 * @throws Exception - Handles various errors
 	 */
-	public function lazyMail($emailRecipient, $subject, $sender){
+	public static function lazyMail($emailRecipient, $subject, $sender){
 		if(empty($emailRecipient))
 			throw new Exception('Email recipient(s) are required in method lazyMail().');
 		if(empty($subject))
