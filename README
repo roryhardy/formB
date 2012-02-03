@@ -1,3 +1,6 @@
+FormB is a class for common online form processing written in PHP. It offers support for user error handling, email address validation, web form validation, different ways to send data via email, html email template support, database user IP address logging, methods to sanitize user input to protect against XSS attacks, and more! This code has been tested to be PCI compliant as of 1-16-2012
+
+
 All code is provided AS-IS. This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 - Rory Cronin-Hardy 2011
