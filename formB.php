@@ -13,7 +13,7 @@
  =================================================================================================================================================================
  */
 
-require_once('config.inc');
+require_once('formB_config.php');
 
 /**
  * FormBackend processes form input.  This file contains both the FormB and Line classes. 
