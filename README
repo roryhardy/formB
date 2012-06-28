@@ -1,14 +1,10 @@
 FormB is a class for common online form processing written in PHP. It offers support for user error handling, email address validation, web form validation, different ways to send data via email, html email template support, database user IP address logging, methods to sanitize user input to protect against XSS attacks, and more! This code has been tested to be PCI compliant as of 1-16-2012
 
+If you intend to use this script, be sure to download a tagged version.  HEAD is not tested for stability!
 
-All code is provided AS-IS. This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-- Rory Cronin-Hardy 2011
+The supplied file (FormB.php) is all you need to include to utilize all available features.  For details you can either read the comments in the code or the supplied Class Synopsis (Documentation.pdf) for details and usage.  The folder example is a supplied and working form utilizing the FormB and Line classes.
 
-
-The supplied file (FormBackend.php) is all you need to include to utilize all available features.  For details you can either read the comments in the code or the supplied Class Synopsis (Documentation.pdf) for details and usage.  The folder example is a supplied and working form utilizing the FormB and Line classes.
-
-config.inc IS REQUIRED by FormBackend.php.  Be sure to have it available or this system will not function!
+FormB_config.php IS REQUIRED by FormB.php.  Be sure to have it available or this system will not function!
 
 Adding 
 
@@ -21,3 +17,5 @@ to your .htaccess file is recommended if you use .inc for PHP includes.
 If a .inc file is requested, all of the code will be revealed as plain text (which is usually very undisirable).
 
 See Default.sql for a proposed table structure for use with the IP-Checker methods!
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
