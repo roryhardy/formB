@@ -304,8 +304,7 @@ class FormB{
 				if(!preg_match('/^"(\\\\"|[^"])+"$/', str_replace("\\\\","",$local)))
 					$isValid = FALSE;
 			}
-			if($chkDNS){ # Make sure the user want's to do this check since it can be time consuming if a lot of requests are made.
-				if($isValid && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A"))){# domain not found in DNS
+			if($chkDNS){ # Make sure the user want's to do this check since it can be time consuming unless the DNS record is already cached on the machine.
 					$isValid = FALSE;
 				}
 			}
