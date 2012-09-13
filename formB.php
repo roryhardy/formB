@@ -306,7 +306,6 @@ class FormB{
 			}
 			if($chkDNS){ # Make sure the user want's to do this check since it can be time consuming unless the DNS record is already cached on the machine.
 					$isValid = FALSE;
-				}
 			}
 		}
 		if(!$isValid)
